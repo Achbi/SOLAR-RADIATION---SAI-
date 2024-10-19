@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Radiation Prediction</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fHNvbGFyfGVufDB8fHx8MTY4MTEzNTI4Ng&ixlib=rb-4.0.3&q=80&w=1080'); /* Background image URL */
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full height */
+            margin: 0;
+            padding: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            overflow-y: auto; /* Allow scrolling */
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        form {
+            background-color: rgba(0, 0, 0, 0.8); /* Darker background for form */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #45a049;
+            transform: scale(1.02); /* Slightly enlarge button on hover */
+        }
+        #results {
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #000;
+            padding: 15px;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+            text-align: center; /* Center text in results */
+        }
+    </style>
+    <script>
+        async function predictRadiation() {
+            const formData = {
+                Temperature: parseFloat(document.getElementById('temperature').value),
+                Pressure: parseFloat(document.getElementById('pressure').value),
+                Humidity: parseFloat(document.getElementById('humidity').value),
+                WindDirection: parseFloat(document.getElementById('windDirection').value),
+                Speed: parseFloat(document.getElementById('speed').value),
+                Month: parseInt(document.getElementById('month').value),
+                Day: parseInt(document.getElementById('day').value),
+                Hour: parseInt(document.getElementById('hour').value),
+                Minute: parseInt(document.getElementById('minute').value),
+                RiseHour: parseInt(document.getElementById('riseHour').value),
+                RiseMinute: parseInt(document.getElementById('riseMinute').value),
+                SetHour: parseInt(document.getElementById('setHour').value),
+                SetMinute: parseInt(document.getElementById('setMinute').value)
+            };
+
+            const response = await fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+            document.getElementById('results').innerHTML = `
+                <p><strong>XGBoost Prediction:</strong> ${data['XGBoost Prediction']}</p>
+                <p><strong>Neural Network Prediction:</strong> ${data['Neural Network Prediction']}</p>
+            `;
+            document.getElementById('results').style.display = 'block'; // Show results after prediction
+        }
+    </script>
+</head>
+<body>
+    <h1>Solar Radiation Prediction</h1>
+    <form onsubmit="event.preventDefault(); predictRadiation();">
+        <label for="temperature">Temperature:</label>
+        <input type="number" id="temperature" step="0.01" required>
+        <label for="pressure">Pressure:</label>
+        <input type="number" id="pressure" step="0.01" required>
+        <label for="humidity">Humidity:</label>
+        <input type="number" id="humidity" step="0.01" required>
+        <label for="windDirection">Wind Direction:</label>
+        <input type="number" id="windDirection" step="0.01" required>
+        <label for="speed">Wind Speed:</label>
+        <input type="number" id="speed" step="0.01" required>
+        <label for="month">Month:</label>
+        <input type="number" id="month" min="1" max="12" required>
+        <label for="day">Day:</label>
+        <input type="number" id="day" min="1" max="31" required>
+        <label for="hour">Hour:</label>
+        <input type="number" id="hour" min="0" max="23" required>
+        <label for="minute">Minute:</label>
+        <input type="number" id="minute" min="0" max="59" required>
+        <label for="riseHour">Sunrise Hour:</label>
+        <input type="number" id="riseHour" min="0" max="23" required>
+        <label for="riseMinute">Sunrise Minute:</label>
+        <input type="number" id="riseMinute" min="0" max="59" required>
+        <label for="setHour">Sunset Hour:</label>
+        <input type="number" id="setHour" min="0" max="23" required>
+        <label for="setMinute">Sunset Minute:</label>
+        <input type="number" id="setMinute" min="0" max="59" required>
+        <button type="submit">Predict</button>
+    </form>
+    <div id="results"></div>
+</body>
+</html>
