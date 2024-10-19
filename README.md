@@ -20,7 +20,12 @@ The dataset is publicly available and includes features such as:
 ### Source:
 The dataset is loaded from a CSV file that contains time-series data.
 
+### Screenshot
+
+
 ## Project Structure
+![Screenshot 2024-10-19 145729](https://github.com/user-attachments/assets/1f234894-a7ae-459a-8f93-2f339b67c0dd)
+
 ```bash
 ├── SolarPrediction.ipynb   # Jupyter notebook for data analysis and modeling
 ├── SolarPrediction.csv     # The dataset used for training and testing
